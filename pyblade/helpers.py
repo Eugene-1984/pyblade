@@ -15,6 +15,5 @@ def human_to_float(human: str) -> float:
             if suffix in human:
                 human = human.replace(suffix, replacement)
                 break
-        return float(human)
-    else:
-        return human
+
+    return float(human)

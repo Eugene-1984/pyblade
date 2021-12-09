@@ -1,8 +1,8 @@
+import logging
 import subprocess
 import tempfile
 from typing import Optional
 from typing import Tuple
-import os
 
 import numpy as np
 
@@ -13,6 +13,24 @@ from .sc16q11 import load_sc16q11
 __all__ = [
     'run'
 ]
+
+LOGGER = logging.getLogger(__name__)
+
+
+def run(rx_config: RxConfig, scenario: Tuple[str, ...], tx_config: Optional[TxConfig] = None) -> np.ndarray:
+    """
+    Configure RX and optionally TX channels, run scenario and return received samples.
+
+    Args:
+        rx_config: Receiver (RX) configuration.
+        tx_config: Transmitter (TX) configuration.
+        scenario: BladeRF-CLI scenario (see examples and/or
+         https://github.com/Nuand/bladeRF/blob/master/host/utilities/bladeRF-cli/README.md).
+
+    Returns:
+        np.ndarray of shape (n, x) where n is the number of the receiving channels
+         and the x is the number of read samples.
+    """
 
 
 def run(rx_config: RxConfig, scenario: Tuple[str, ...], tx_config: Optional[TxConfig] = None) -> np.ndarray:
@@ -25,12 +43,12 @@ def run(rx_config: RxConfig, scenario: Tuple[str, ...], tx_config: Optional[TxCo
 
         args.extend(scenario)
 
-        print('Executing bladeRF-cli with:\n', '\n'.join(args))
+        bladerf_cli_full_scenario = '; '.join(args)
+        LOGGER.debug('bladeRF-cl full scenario: %s', bladerf_cli_full_scenario)
 
-        bladerf_cli_output = subprocess.check_output(['bladeRF-cli', '-e', '; '.join(args)]).decode('utf-8')
-        bladerf_cli_output = '\n'.join([i for i in bladerf_cli_output.splitlines()
-                                        if i.strip()])  # remove empty lines
+        bladerf_cli_output = subprocess.check_output(['bladeRF-cli', '-e', bladerf_cli_full_scenario]).decode('utf-8')
 
-        print('bladeRF-cli output is:', bladerf_cli_output)
+        LOGGER.debug('bladeRF-cli console output: %s',
+                     '\n'.join([i for i in bladerf_cli_output.splitlines() if i.strip()]))
 
         return load_sc16q11(rx_file.name, n_channels=len(rx_config.channels))

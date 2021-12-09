@@ -1,6 +1,7 @@
 # pyblade
 
-Python BladeRF wrapper with tests and experiments.
+Python BladeRF wrapper with tests and experiments. Wrapper aim to eliminate a boilerplate code to configure channels
+and save/store signals as numpy arrays.
 
 ## Prerequisites for GNU/Linux OS:
 
@@ -28,7 +29,7 @@ $ bladeRF-cli -p
   USB Address:    3
 ```
 
-## Python deployment
+## Installation in developer mode
 
 The python version in the OS disto may differ from the required version, we use https://github.com/pyenv/pyenv
 tool to install a specific version. Install the prerequisites for your OS as described in
@@ -48,3 +49,32 @@ Typicall dev usage of the package is to install it in editable mode:
 $ pip install -e pyblade
 ```
 
+## Usages and example
+
+Wrapper works in the "scenario" mode: the user creates receiver and/or transmitter configs and writes BladeRF-CLI
+script:
+
+```python
+import pyblade
+
+rx_config = pyblade.RxConfig(
+    samplerate='4M',   # sample rate
+    frequency=433e6,   # central frequency 
+    bandwidth='2M',    # bandwidth
+    n_samples='1M',    # number of samples to read
+    agc=None,          # disable AGC
+    channels=(1, 2),   # read from channel 1 and 2
+)
+
+iq = pyblade.run(
+    rx_config=rx_config,
+    scenario=('rx start',
+              'rx',
+              'rx wait')
+)
+
+# `iq` variable now hols a numpy array with the received samples.
+```
+
+Most of the examples are in the jupyter notebooks in the
+[pyblade_examples](https://github.com/Eugene-1984/pyblade/tree/main/pyblade_examples directory). 
