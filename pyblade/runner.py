@@ -31,6 +31,9 @@ def run(rx_config: RxConfig, scenario: Tuple[str, ...], tx_config: Optional[TxCo
         np.ndarray of shape (n, x) where n is the number of the receiving channels
          and the x is the number of read samples.
     """
+
+
+def run(rx_config: RxConfig, scenario: Tuple[str, ...], tx_config: Optional[TxConfig] = None) -> np.ndarray:
     with tempfile.NamedTemporaryFile() as rx_file, tempfile.NamedTemporaryFile() as tx_file:
         args = rx_config.as_args(rx_file.name)
 

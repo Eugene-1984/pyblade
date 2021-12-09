@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Tuple, List, Optional, BinaryIO, Union
 
 import numpy as np
-from dataclasses import dataclass
 
 from .helpers import human_to_float
 from .sc16q11 import store_sc16q11
